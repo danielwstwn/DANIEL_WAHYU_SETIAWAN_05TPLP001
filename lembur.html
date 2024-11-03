@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Lembur</title>
+    <link rel="stylesheet" href="css/lembur.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Data Lembur</h1>
+        <table id="lemburTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama Karyawan</th>
+                    <th>Tanggal Lembur</th>
+                    <th>Jam Lembur</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data lembur akan ditambahkan di sini -->
+            </tbody>
+        </table>
+
+        <h2>Tambah Lembur</h2>
+        <input type="text" id="namaKaryawan" placeholder="Nama Karyawan" required>
+        <input type="date" id="tanggalLembur" required>
+        <input type="number" id="jamLembur" placeholder="Jam Lembur" required>
+        <button onclick="tambahLembur()">Tambah</button>
+
+        <button onclick="location.href='index.html'">Kembali</button>
+    </div>
+
+    <script>
+        let lemburData = JSON.parse(localStorage.getItem('lemburData')) || [];
+
+        function renderTable() {
+            const tableBody = document.getElementById('lemburTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+            lemburData.forEach((lembur, index) => {
+                const newRow = tableBody.insertRow();
+                newRow.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${lembur.nama}</td>
+                    <td>${lembur.tanggal}</td>
+                    <td>${lembur.jam}</td>
+                    <td>
+                        <button onclick="editLembur(${index})">Edit</button>
+                        <button onclick="hapusLembur(${index})">Hapus</button>
+                    </td>
+                `;
+            });
+        }
+
+        function tambahLembur() {
+            const namaKaryawan = document.getElementById('namaKaryawan').value;
+            const tanggalLembur = document.getElementById('tanggalLembur').value;
+            const jamLembur = document.getElementById('jamLembur').value;
+
+            if (namaKaryawan && tanggalLembur && jamLembur) {
+                lemburData.push({ nama: namaKaryawan, tanggal: tanggalLembur, jam: jamLembur });
+                localStorage.setItem('lemburData', JSON.stringify(lemburData));
+                renderTable();
+
+                // Reset input fields
+                document.getElementById('namaKaryawan').value = '';
+                document.getElementById('tanggalLembur').value = '';
+                document.getElementById('jamLembur').value = '';
+            } else {
+                alert('Semua field harus diisi!');
+            }
+        }
+
+        function hapusLembur(index) {
+            lemburData.splice(index, 1);
+            localStorage.setItem('lemburData', JSON.stringify(lemburData));
+            renderTable();
+        }
+
+        function editLembur(index) {
+            const lembur = lemburData[index];
+            document.getElementById('namaKaryawan').value = lembur.nama;
+            document.getElementById('tanggalLembur').value = lembur.tanggal;
+            document.getElementById('jamLembur').value = lembur.jam;
+
+            // Hapus lembur dari daftar untuk diubah
+            hapusLembur(index);
+        }
+
+        // Render tabel saat halaman dimuat
+        window.onload = renderTable;
+    </script>
+</body>
+</html>

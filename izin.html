@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Izin</title>
+    <link rel="stylesheet" href="css/izin.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Data Izin</h1>
+        <table id="izinTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama Karyawan</th>
+                    <th>Tanggal Izin</th>
+                    <th>Keterangan</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data izin akan ditambahkan di sini -->
+            </tbody>
+        </table>
+
+        <h2>Tambah Izin</h2>
+        <input type="text" id="namaKaryawan" placeholder="Nama Karyawan" required>
+        <input type="date" id="tanggalIzin" required>
+        <input type="text" id="keterangan" placeholder="Keterangan" required>
+        <button onclick="tambahIzin()">Tambah</button>
+
+        <button onclick="location.href='index.html'">Kembali</button>
+    </div>
+
+    <script>
+        let izinData = JSON.parse(localStorage.getItem('izinData')) || [];
+
+        function renderTable() {
+            const tableBody = document.getElementById('izinTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+            izinData.forEach((izin, index) => {
+                const newRow = tableBody.insertRow();
+                newRow.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${izin.nama}</td>
+                    <td>${izin.tanggal}</td>
+                    <td>${izin.keterangan}</td>
+                    <td>
+                        <button onclick="editIzin(${index})">Edit</button>
+                        <button onclick="hapusIzin(${index})">Hapus</button>
+                    </td>
+                `;
+            });
+        }
+
+        function tambahIzin() {
+            const namaKaryawan = document.getElementById('namaKaryawan').value;
+            const tanggalIzin = document.getElementById('tanggalIzin').value;
+            const keterangan = document.getElementById('keterangan').value;
+
+            if (namaKaryawan && tanggalIzin && keterangan) {
+                izinData.push({ nama: namaKaryawan, tanggal: tanggalIzin, keterangan: keterangan });
+                localStorage.setItem('izinData', JSON.stringify(izinData));
+                renderTable();
+
+                // Reset input fields
+                document.getElementById('namaKaryawan').value = '';
+                document.getElementById('tanggalIzin').value = '';
+                document.getElementById('keterangan').value = '';
+            } else {
+                alert('Semua field harus diisi!');
+            }
+        }
+
+        function hapusIzin(index) {
+            izinData.splice(index, 1);
+            localStorage.setItem('izinData', JSON.stringify(izinData));
+            renderTable();
+        }
+
+        function editIzin(index) {
+            const izin = izinData[index];
+            document.getElementById('namaKaryawan').value = izin.nama;
+            document.getElementById('tanggalIzin').value = izin.tanggal;
+            document.getElementById('keterangan').value = izin.keterangan;
+
+            hapusIzin(index);
+        }
+
+        // Render tabel saat halaman dimuat
+        window.onload = renderTable;
+    </script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Karyawan</title>
+    <link rel="stylesheet" href="css/karyawan.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Data Karyawan</h1>
+        <table id="karyawanTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama</th>
+                    <th>Jabatan</th>
+                    <th>Divisi</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data karyawan akan ditambahkan di sini -->
+            </tbody>
+        </table>
+
+        <h2>Tambah Karyawan</h2>
+        <input type="text" id="nama" placeholder="Nama" required>
+        <input type="text" id="jabatan" placeholder="Jabatan" required>
+        <input type="text" id="divisi" placeholder="Divisi" required>
+        <button onclick="tambahKaryawan()">Tambah</button>
+
+        <button onclick="location.href='index.html'">Kembali</button>
+    </div>
+
+    <script>
+        let karyawanID = 1; // ID Karyawan
+        let karyawanData = JSON.parse(localStorage.getItem('karyawanData')) || [];
+
+        function renderTable() {
+            const tableBody = document.getElementById('karyawanTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+            karyawanData.forEach((karyawan, index) => {
+                const newRow = tableBody.insertRow();
+                newRow.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${karyawan.nama}</td>
+                    <td>${karyawan.jabatan}</td>
+                    <td>${karyawan.divisi}</td>
+                    <td>
+                        <button onclick="editKaryawan(${index})">Edit</button>
+                        <button onclick="hapusKaryawan(${index})">Hapus</button>
+                    </td>
+                `;
+            });
+        }
+
+        function tambahKaryawan() {
+            const nama = document.getElementById('nama').value;
+            const jabatan = document.getElementById('jabatan').value;
+            const divisi = document.getElementById('divisi').value;
+
+            if (nama && jabatan && divisi) {
+                karyawanData.push({ nama, jabatan, divisi });
+                localStorage.setItem('karyawanData', JSON.stringify(karyawanData));
+                renderTable();
+
+                // Reset input fields
+                document.getElementById('nama').value = '';
+                document.getElementById('jabatan').value = '';
+                document.getElementById('divisi').value = '';
+            } else {
+                alert('Semua field harus diisi!');
+            }
+        }
+
+        function hapusKaryawan(index) {
+            karyawanData.splice(index, 1);
+            localStorage.setItem('karyawanData', JSON.stringify(karyawanData));
+            renderTable();
+        }
+
+        function editKaryawan(index) {
+            const karyawan = karyawanData[index];
+            document.getElementById('nama').value = karyawan.nama;
+            document.getElementById('jabatan').value = karyawan.jabatan;
+            document.getElementById('divisi').value = karyawan.divisi;
+
+            hapusKaryawan(index);
+        }
+
+        // Render tabel saat halaman dimuat
+        window.onload = renderTable;
+    </script>
+</body>
+</html>
+
+

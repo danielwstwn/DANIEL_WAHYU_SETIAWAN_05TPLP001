@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Divisi</title>
+    <link rel="stylesheet" href="css/divisi.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Data Divisi</h1>
+        <table id="divisiTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama Divisi</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data divisi akan ditambahkan di sini -->
+            </tbody>
+        </table>
+
+        <h2>Tambah Divisi</h2>
+        <input type="text" id="namaDivisi" placeholder="Nama Divisi" required>
+        <button onclick="tambahDivisi()">Tambah</button>
+
+        <button onclick="location.href='index.html'">Kembali</button>
+    </div>
+
+    <script>
+        let divisiData = JSON.parse(localStorage.getItem('divisiData')) || [];
+
+        function renderTable() {
+            const tableBody = document.getElementById('divisiTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+            divisiData.forEach((divisi, index) => {
+                const newRow = tableBody.insertRow();
+                newRow.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${divisi.nama}</td>
+                    <td>
+                        <button onclick="editDivisi(${index})">Edit</button>
+                        <button onclick="hapusDivisi(${index})">Hapus</button>
+                    </td>
+                `;
+            });
+        }
+
+        function tambahDivisi() {
+            const namaDivisi = document.getElementById('namaDivisi').value;
+
+            if (namaDivisi) {
+                divisiData.push({ nama: namaDivisi });
+                localStorage.setItem('divisiData', JSON.stringify(divisiData));
+                renderTable();
+
+                // Reset input field
+                document.getElementById('namaDivisi').value = '';
+            } else {
+                alert('Nama Divisi harus diisi!');
+            }
+        }
+
+        function hapusDivisi(index) {
+            divisiData.splice(index, 1);
+            localStorage.setItem('divisiData', JSON.stringify(divisiData));
+            renderTable();
+        }
+
+        function editDivisi(index) {
+            const divisi = divisiData[index];
+            document.getElementById('namaDivisi').value = divisi.nama;
+
+            hapusDivisi(index);
+        }
+
+        // Render tabel saat halaman dimuat
+        window.onload = renderTable;
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Jabatan</title>
+    <link rel="stylesheet" href="css/jabatan.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Data Jabatan</h1>
+        <table id="jabatanTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama Jabatan</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data jabatan akan ditambahkan di sini -->
+            </tbody>
+        </table>
+
+        <h2>Tambah Jabatan</h2>
+        <input type="text" id="namaJabatan" placeholder="Nama Jabatan" required>
+        <button onclick="tambahJabatan()">Tambah</button>
+
+        <button onclick="location.href='index.html'">Kembali</button>
+    </div>
+
+    <script>
+        let jabatanData = JSON.parse(localStorage.getItem('jabatanData')) || [];
+
+        function renderTable() {
+            const tableBody = document.getElementById('jabatanTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+            jabatanData.forEach((jabatan, index) => {
+                const newRow = tableBody.insertRow();
+                newRow.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${jabatan.nama}</td>
+                    <td>
+                        <button onclick="editJabatan(${index})">Edit</button>
+                        <button onclick="hapusJabatan(${index})">Hapus</button>
+                    </td>
+                `;
+            });
+        }
+
+        function tambahJabatan() {
+            const namaJabatan = document.getElementById('namaJabatan').value;
+
+            if (namaJabatan) {
+                jabatanData.push({ nama: namaJabatan });
+                localStorage.setItem('jabatanData', JSON.stringify(jabatanData));
+                renderTable();
+
+                // Reset input field
+                document.getElementById('namaJabatan').value = '';
+            } else {
+                alert('Nama Jabatan harus diisi!');
+            }
+        }
+
+        function hapusJabatan(index) {
+            jabatanData.splice(index, 1);
+            localStorage.setItem('jabatanData', JSON.stringify(jabatanData));
+            renderTable();
+        }
+
+        function editJabatan(index) {
+            const jabatan = jabatanData[index];
+            document.getElementById('namaJabatan').value = jabatan.nama;
+
+            hapusJabatan(index);
+        }
+
+        // Render tabel saat halaman dimuat
+        window.onload = renderTable;
+    </script>
+</body>
+</html>

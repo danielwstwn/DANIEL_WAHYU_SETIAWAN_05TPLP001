@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Absensi</title>
+    <link rel="stylesheet" href="css/absensi.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Data Absensi</h1>
+        <table id="absensiTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama Karyawan</th>
+                    <th>Tanggal</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data absensi akan ditambahkan di sini -->
+            </tbody>
+        </table>
+
+        <h2>Tambah Absensi</h2>
+        <input type="text" id="namaKaryawan" placeholder="Nama Karyawan" required>
+        <input type="date" id="tanggal" required>
+        <select id="status">
+            <option value="" disabled selected>Status</option>
+            <option value="Hadir">Hadir</option>
+            <option value="Izin">Izin</option>
+            <option value="Tidak Hadir">Tidak Hadir</option>
+        </select>
+        <button onclick="tambahAbsensi()">Tambah</button>
+
+        <button onclick="location.href='index.html'">Kembali</button>
+    </div>
+
+    <script>
+        let absensiData = JSON.parse(localStorage.getItem('absensiData')) || [];
+
+        function renderTable() {
+            const tableBody = document.getElementById('absensiTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+            absensiData.forEach((absensi, index) => {
+                const newRow = tableBody.insertRow();
+                newRow.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${absensi.nama}</td>
+                    <td>${absensi.tanggal}</td>
+                    <td>${absensi.status}</td>
+                    <td>
+                        <button onclick="editAbsensi(${index})">Edit</button>
+                        <button onclick="hapusAbsensi(${index})">Hapus</button>
+                    </td>
+                `;
+            });
+        }
+
+        function tambahAbsensi() {
+            const namaKaryawan = document.getElementById('namaKaryawan').value;
+            const tanggal = document.getElementById('tanggal').value;
+            const status = document.getElementById('status').value;
+
+            if (namaKaryawan && tanggal && status) {
+                absensiData.push({ nama: namaKaryawan, tanggal: tanggal, status: status });
+                localStorage.setItem('absensiData', JSON.stringify(absensiData));
+                renderTable();
+
+                // Reset input fields
+                document.getElementById('namaKaryawan').value = '';
+                document.getElementById('tanggal').value = '';
+                document.getElementById('status').selectedIndex = 0;
+            } else {
+                alert('Semua field harus diisi!');
+            }
+        }
+
+        function hapusAbsensi(index) {
+            absensiData.splice(index, 1);
+            localStorage.setItem('absensiData', JSON.stringify(absensiData));
+            renderTable();
+        }
+
+        function editAbsensi(index) {
+            const absensi = absensiData[index];
+            document.getElementById('namaKaryawan').value = absensi.nama;
+            document.getElementById('tanggal').value = absensi.tanggal;
+            document.getElementById('status').value = absensi.status;
+
+            hapusAbsensi(index);
+        }
+
+        // Render tabel saat halaman dimuat
+        window.onload = renderTable;
+    </script>
+</body>
+</html>
